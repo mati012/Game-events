@@ -1,0 +1,242 @@
+/* Main Styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.game-logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: #7289DA;
+    text-shadow: 0 0 10px rgba(114, 137, 218, 0.5);
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, #7289DA 0%, #4E5D94 100%);
+    border-radius: 10px;
+    padding: 60px 30px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/images/pattern.png');
+    opacity: 0.1;
+}
+
+/* Section Titles */
+.section-title {
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #333;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background-color: #7289DA;
+}
+
+/* Event Cards */
+.event-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.event-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.event-card .card-body {
+    padding: 20px;
+}
+
+.event-card .card-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.event-card .card-footer {
+    background-color: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 15px 20px;
+}
+
+.featured-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff6b6b;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 1;
+}
+
+.event-details {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.event-details > div {
+    margin-bottom: 8px;
+}
+
+.event-details i {
+    width: 20px;
+    margin-right: 5px;
+    color: #7289DA;
+}
+
+/* Event Detail Page */
+.event-detail-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.event-header h1 {
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.event-meta {
+    margin-bottom: 20px;
+}
+
+.event-image-container {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.event-image-container img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+/* Participant List */
+.participant-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-radius: 30px;
+    padding: 5px 15px 5px 5px;
+}
+
+.participant-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+}
+
+.participant-name {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Ad Banners */
+.ad-banner {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ad-banner img {
+    width: 100%;
+    height: auto;
+}
+
+/* Forms */
+.form-control:focus {
+    border-color: #7289DA;
+    box-shadow: 0 0 0 0.2rem rgba(114, 137, 218, 0.25);
+}
+
+.btn-primary {
+    background-color: #7289DA;
+    border-color: #7289DA;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #5e74bc;
+    border-color: #5e74bc;
+}
+
+.btn-outline-primary {
+    color: #7289DA;
+    border-color: #7289DA;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+    background-color: #7289DA;
+    border-color: #7289DA;
+}
+
+/* Footer */
+.footer {
+    margin-top: 50px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-banner {
+        padding: 40px 20px;
+    }
+    
+    .event-detail-container {
+        padding: 20px;
+    }
+    
+    .event-image-container img {
+        height: 200px;
+    }
+}

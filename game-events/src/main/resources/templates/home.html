@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title id="pageTitle">Home</title>
+</head>
+<body>
+    <th:block th:fragment="content">
+        <!-- Hero Banner -->
+        <div class="jumbotron hero-banner text-white">
+            <div class="container">
+                <h1 class="display-4">Find Your Next Gaming Adventure</h1>
+                <p class="lead">Join gaming events, tournaments, and meetups in your area</p>
+                <a th:href="@{/events}" class="btn btn-primary btn-lg">Browse Events</a>
+            </div>
+        </div>
+
+        <!-- Featured Events -->
+        <section class="mb-5">
+            <h2 class="section-title">Featured Events</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" th:each="event : ${featuredEvents}">
+                    <div class="card h-100 event-card">
+                        <div class="featured-badge">Featured</div>
+                        <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image" 
+                             onerror="this.src='/images/default-event.jpg';">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                            <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
+                            <div class="event-details">
+                                <div class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span th:text="${event.location}">Location</span>
+                                </div>
+                                <div class="event-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
+                                </div>
+                                <div class="event-type">
+                                    <span class="badge badge-secondary" th:text="${event.gameType}">Game Type</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <a th:href="@{/events}" class="btn btn-outline-secondary">View All Events</a>
+            </div>
+        </section>
+
+        <!-- Recent Events -->
+        <section class="mb-5">
+            <h2 class="section-title">Recent Events</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" th:each="event : ${recentEvents}">
+                    <div class="card h-100 event-card">
+                        <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image"
+                             onerror="this.src='/images/default-event.jpg';">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                            <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
+                            <div class="event-details">
+                                <div class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span th:text="${event.location}">Location</span>
+                                </div>
+                                <div class="event-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
+                                </div>
+                                <div class="event-type">
+                                    <span class="badge badge-secondary" th:text="${event.gameType}">Game Type</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Promotional Banners -->
+        <section class="mb-5">
+            <h2 class="section-title">Sponsored By</h2>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="ad-banner">
+                        <img src="/images/sponsors/sponsor1.jpg" alt="Sponsor" class="img-fluid">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="ad-banner">
+                        <img src="/images/sponsors/sponsor2.jpg" alt="Sponsor" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </th:block>
+</body>
+</html>

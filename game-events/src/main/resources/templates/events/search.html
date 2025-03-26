@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title id="pageTitle">Search Events</title>
+</head>
+<body>
+    <th:block th:fragment="content">
+        <h1>Search Gaming Events</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/events/search}" method="get" class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="keyword">Keyword Search</label>
+                        <input type="text" id="keyword" name="keyword" class="form-control" 
+                               th:value="${keyword}" placeholder="Event name, description...">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="gameType">Game Type</label>
+                        <select id="gameType" name="gameType" class="form-control">
+                            <option value="">All Types</option>
+                            <option value="FPS" th:selected="${gameType == 'FPS'}">FPS</option>
+                            <option value="MOBA" th:selected="${gameType == 'MOBA'}">MOBA</option>
+                            <option value="RPG" th:selected="${gameType == 'RPG'}">RPG</option>
+                            <option value="Strategy" th:selected="${gameType == 'Strategy'}">Strategy</option>
+                            <option value="Fighting" th:selected="${gameType == 'Fighting'}">Fighting</option>
+                            <option value="Sports" th:selected="${gameType == 'Sports'}">Sports</option>
+                            <option value="Racing" th:selected="${gameType == 'Racing'}">Racing</option>
+                            <option value="Card Games" th:selected="${gameType == 'Card Games'}">Card Games</option>
+                            <option value="Board Games" th:selected="${gameType == 'Board Games'}">Board Games</option>
+                            <option value="Other" th:selected="${gameType == 'Other'}">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" class="form-control" 
+                               th:value="${location}" placeholder="City, venue...">
+                    </div>
+                    
+                    <div class="col-md-2 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Search Results -->
+        <h2>Search Results</h2>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="event : ${events}">
+                <div class="card h-100 event-card">
+                    <div class="featured-badge" th:if="${event.featured}">Featured</div>
+                    <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image"
+                         onerror="this.src='/images/default-event.jpg';">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                        <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
+                        <div class="event-details">
+                            <div class="event-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${event.location}">Location</span>
+                            </div>
+                            <div class="event-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
+                            </div>
+                            <div class="event-type">
+                                <span class="badge badge-secondary" th:text="${event.gameType}">Game Type</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- If no results found -->
+        <div class="alert alert-info" th:if="${events.empty}">
+            No events found matching your search criteria. Try different keywords or filters.
+        </div>
+    </th:block>
+</body>
+</html>

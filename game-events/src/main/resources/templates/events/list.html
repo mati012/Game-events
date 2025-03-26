@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title id="pageTitle">All Events</title>
+</head>
+<body>
+    <th:block th:fragment="content">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h1>All Gaming Events</h1>
+            </div>
+            <div class="col-md-6 text-right">
+                <a th:href="@{/events/search}" class="btn btn-outline-primary">
+                    <i class="fas fa-search"></i> Advanced Search
+                </a>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4" th:each="event : ${events}">
+                <div class="card h-100 event-card">
+                    <div class="featured-badge" th:if="${event.featured}">Featured</div>
+                    <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image"
+                         onerror="this.src='/images/default-event.jpg';">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${event.name}">Event Name</h5>
+                        <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
+                        <div class="event-details">
+                            <div class="event-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span th:text="${event.location}">Location</span>
+                            </div>
+                            <div class="event-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
+                            </div>
+                            <div class="event-type">
+                                <span class="badge badge-secondary" th:text="${event.gameType}">Game Type</span>
+                            </div>
+                            <div class="event-participants">
+                                <i class="fas fa-users"></i>
+                                <span th:text="${event.currentParticipants + ' / ' + event.maxParticipants}">Participants</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- If no events found -->
+        <div class="alert alert-info" th:if="${events.empty}">
+            No events found. Check back later or try a different search.
+        </div>
+    </th:block>
+</body>
+</html>
