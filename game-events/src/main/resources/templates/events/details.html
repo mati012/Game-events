@@ -2,27 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title id="pageTitle">Event Details</title>
+    <title>Event Details</title>
 </head>
 <body>
     <th:block th:fragment="content">
         <div class="event-detail-container">
             <!-- Event Header -->
             <div class="event-header mb-4">
-                <div class="row">
+                <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h1 th:text="${event.name}">Event Name</h1>
-                        <div class="event-meta">
-                            <span class="badge badge-primary mr-2" th:text="${event.gameType}">Game Type</span>
+                        <h1 th:text="${event.name}" class="mb-2">Event Name</h1>
+                        <div class="event-meta d-flex align-items-center flex-wrap gap-2">
+                            <span class="badge bg-primary me-2" th:text="${event.gameType}">Game Type</span>
                             <span class="text-muted">
-                                <i class="far fa-calendar-alt"></i>
+                                <i class="far fa-calendar-alt me-1"></i>
                                 <span th:text="${#temporals.format(event.dateTime, 'EEEE, dd MMMM yyyy, HH:mm')}">Date and Time</span>
                             </span>
                         </div>
                     </div>
-                    <div class="col-md-4 text-right">
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <a th:href="@{/events}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Events
+                            <i class="fas fa-arrow-left me-1"></i> Back to Events
                         </a>
                     </div>
                 </div>
@@ -33,28 +33,29 @@
                 <!-- Event Image -->
                 <div class="col-md-5">
                     <div class="event-image-container mb-4">
-                        <img th:src="${event.imageUrl}" class="img-fluid rounded" alt="Event Image"
-                             onerror="this.src='/images/default-event.jpg';">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                            <i class="fas fa-gamepad fa-5x text-secondary"></i>
+                        </div>
                     </div>
                     
                     <!-- Event Details Card -->
                     <div class="card mb-4">
                         <div class="card-header bg-primary text-white">
-                            Event Details
+                            <h5 class="mb-0">Event Details</h5>
                         </div>
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item">
-                                <i class="fas fa-map-marker-alt text-primary"></i>
+                                <i class="fas fa-map-marker-alt text-primary me-2"></i>
                                 <strong>Location:</strong>
                                 <span th:text="${event.location}">Location</span>
                             </li>
                             <li class="list-group-item">
-                                <i class="fas fa-users text-primary"></i>
+                                <i class="fas fa-users text-primary me-2"></i>
                                 <strong>Participants:</strong>
                                 <span th:text="${event.currentParticipants + ' / ' + event.maxParticipants}">Participants</span>
                             </li>
                             <li class="list-group-item">
-                                <i class="fas fa-gamepad text-primary"></i>
+                                <i class="fas fa-gamepad text-primary me-2"></i>
                                 <strong>Game Type:</strong>
                                 <span th:text="${event.gameType}">Game Type</span>
                             </li>
@@ -62,19 +63,19 @@
                     </div>
                     
                     <!-- Registration Button -->
-                    <div class="text-center mb-4" sec:authorize="isAuthenticated()">
-                        <button class="btn btn-success btn-lg btn-block" 
+                    <div class="mb-4" sec:authorize="isAuthenticated()">
+                        <button class="btn btn-success w-100 py-2" 
                                 th:if="${event.currentParticipants < event.maxParticipants}">
-                            <i class="fas fa-check-circle"></i> Register for Event
+                            <i class="fas fa-check-circle me-2"></i> Register for Event
                         </button>
-                        <button class="btn btn-secondary btn-lg btn-block" disabled 
+                        <button class="btn btn-secondary w-100 py-2" disabled 
                                 th:unless="${event.currentParticipants < event.maxParticipants}">
-                            <i class="fas fa-ban"></i> Event Full
+                            <i class="fas fa-ban me-2"></i> Event Full
                         </button>
                     </div>
                     
                     <!-- Login to Register -->
-                    <div class="text-center mb-4" sec:authorize="!isAuthenticated()">
+                    <div class="mb-4" sec:authorize="!isAuthenticated()">
                         <div class="alert alert-info">
                             <a th:href="@{/login}" class="alert-link">Login</a> to register for this event
                         </div>
@@ -85,7 +86,7 @@
                 <div class="col-md-7">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h4 class="mb-0">About This Event</h4>
+                            <h5 class="mb-0">About This Event</h5>
                         </div>
                         <div class="card-body">
                             <p class="card-text" th:text="${event.description}">
@@ -97,14 +98,15 @@
                     <!-- Participants List -->
                     <div class="card mb-4">
                         <div class="card-header">
-                            <h4 class="mb-0">Participants</h4>
+                            <h5 class="mb-0">Participants</h5>
                         </div>
                         <div class="card-body">
                             <div th:if="${event.participants != null and !event.participants.empty}">
                                 <div class="participant-list">
                                     <div class="participant-item" th:each="participant : ${event.participants}">
-                                        <img th:src="${participant.profileImageUrl}" alt="Profile" class="participant-avatar"
-                                             onerror="this.src='/images/default-avatar.jpg';">
+                                        <div class="participant-avatar bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; border-radius: 50%;">
+                                            <span th:text="${#strings.substring(participant.username, 0, 1).toUpperCase()}">U</span>
+                                        </div>
                                         <span class="participant-name" th:text="${participant.username}">Username</span>
                                     </div>
                                 </div>
@@ -114,8 +116,6 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Comments Section would go here in a full implementation -->
                 </div>
             </div>
         </div>

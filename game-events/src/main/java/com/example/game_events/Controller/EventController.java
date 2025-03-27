@@ -1,7 +1,6 @@
 package com.example.game_events.Controller;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,14 +27,22 @@ public class EventController {
     @GetMapping("")
     public String listEvents(Model model) {
         model.addAttribute("events", eventService.getAllEvents());
-        return "events/list";
+        
+        // Añadir título para el layout
+        model.addAttribute("title", "All Events");
+        
+        // Especificar el fragmento de contenido
+        model.addAttribute("content", "events/list :: content");
+        
+        // Retornar el layout
+        return "layout";
     }
     
     @GetMapping("/search")
-    public String searchEvents(@RequestParam(name = "keyword", required = false) String keyword, 
-                              @RequestParam(name = "gameType", required = false) String gameType,
-                              @RequestParam(name = "location", required = false) String location,
-                              Model model) {
+    public String searchEvents(@RequestParam(name = "keyword", required = false) String keyword,
+                               @RequestParam(name = "gameType", required = false) String gameType,
+                               @RequestParam(name = "location", required = false) String location,
+                               Model model) {
         List<Event> searchResults;
         
         if (keyword != null && !keyword.isEmpty()) {
@@ -53,7 +60,14 @@ public class EventController {
         model.addAttribute("gameType", gameType);
         model.addAttribute("location", location);
         
-        return "events/search";
+        // Añadir título para el layout
+        model.addAttribute("title", "Search Events");
+        
+        // Especificar el fragmento de contenido
+        model.addAttribute("content", "events/search :: content");
+        
+        // Retornar el layout
+        return "layout";
     }
     
     @GetMapping("/{id}/details")
@@ -62,6 +76,14 @@ public class EventController {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         
         model.addAttribute("event", event);
-        return "events/details";
+        
+        // Añadir título para el layout
+        model.addAttribute("title", "Event Details");
+        
+        // Especificar el fragmento de contenido
+        model.addAttribute("content", "events/details :: content");
+        
+        // Retornar el layout
+        return "layout";
     }
 }

@@ -2,7 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title id="pageTitle">Home</title>
+    <!-- No se necesita el id="pageTitle" aquí -->
+    <title>Home</title>
 </head>
 <body>
     <th:block th:fragment="content">
@@ -22,7 +23,10 @@
                 <div class="col-md-4 mb-4" th:each="event : ${featuredEvents}">
                     <div class="card h-100 event-card">
                         <div class="featured-badge">Featured</div>
-                        <!-- Image removed -->
+                        <!-- Image placeholder -->
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-gamepad fa-3x text-secondary"></i>
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.name}">Event Name</h5>
                             <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
@@ -36,7 +40,7 @@
                                     <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
                                 </div>
                                 <div class="event-type">
-                                    <span class="badge badge-secondary" th:text="${event.gameType}">Game Type</span>
+                                    <span class="badge bg-secondary" th:text="${event.gameType}">Game Type</span>
                                 </div>
                             </div>
                         </div>
@@ -57,7 +61,10 @@
             <div class="row">
                 <div class="col-md-4 mb-4" th:each="event : ${recentEvents}">
                     <div class="card h-100 event-card">
-                        <!-- Image removed -->
+                        <!-- Image placeholder -->
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-gamepad fa-3x text-secondary"></i>
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.name}">Event Name</h5>
                             <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
@@ -71,7 +78,7 @@
                                     <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
                                 </div>
                                 <div class="event-type">
-                                    <span class="badge badge-secondary" th:text="${event.gameType}">Game Type</span>
+                                    <span class="badge bg-secondary" th:text="${event.gameType}">Game Type</span>
                                 </div>
                             </div>
                         </div>
@@ -89,7 +96,9 @@
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <div class="ad-banner">
-                        <!-- Sponsor image removed -->
+                        <h4>Interested in sponsoring GameEvents?</h4>
+                        <p>Reach thousands of gamers in your area</p>
+                        <a href="#" class="btn btn-primary">Become a Sponsor</a>
                     </div>
                 </div>
             </div>

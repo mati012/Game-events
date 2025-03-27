@@ -21,12 +21,12 @@ public class SecurityConfig {
         http
         .authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-            .requestMatchers("/", "/home", "/search", "/events", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+            .requestMatchers("/", "/home", "/search", "/events", "/css/**", "/js/**", "/images/**", "/static/**", "/register").permitAll()
             
             .requestMatchers("/events/*/details").authenticated()
             .anyRequest().authenticated()
-    )
-    // resto
+        )
+        // resto
             .formLogin(formLogin ->
                 formLogin
                     .loginPage("/login")

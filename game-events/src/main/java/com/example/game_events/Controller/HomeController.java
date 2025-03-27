@@ -22,11 +22,14 @@ public class HomeController {
     public String home(Model model) {
         model.addAttribute("featuredEvents", eventService.getFeaturedEvents());
         model.addAttribute("recentEvents", eventService.getRecentEvents());
-        return "home";
-    }
-    
-    @GetMapping("/login")
-    public String login() {
-        return "login";
+        
+        // Añadir título para el layout
+        model.addAttribute("title", "Home");
+        
+        // Especificar el fragmento de contenido
+        model.addAttribute("content", "home :: content");
+        
+        // Retornar el layout en lugar de la página específica
+        return "layout";
     }
 }
