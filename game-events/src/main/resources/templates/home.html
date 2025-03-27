@@ -22,8 +22,7 @@
                 <div class="col-md-4 mb-4" th:each="event : ${featuredEvents}">
                     <div class="card h-100 event-card">
                         <div class="featured-badge">Featured</div>
-                        <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image" 
-                             onerror="this.src='/images/default-event.jpg';">
+                        <!-- Image removed -->
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.name}">Event Name</h5>
                             <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
@@ -58,8 +57,7 @@
             <div class="row">
                 <div class="col-md-4 mb-4" th:each="event : ${recentEvents}">
                     <div class="card h-100 event-card">
-                        <img th:src="${event.imageUrl}" class="card-img-top" alt="Event Image"
-                             onerror="this.src='/images/default-event.jpg';">
+                        <!-- Image removed -->
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.name}">Event Name</h5>
                             <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
@@ -91,12 +89,7 @@
             <div class="row">
                 <div class="col-md-6 mb-4">
                     <div class="ad-banner">
-                        <img src="/images/sponsors/sponsor1.jpg" alt="Sponsor" class="img-fluid">
-                    </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                    <div class="ad-banner">
-                        <img src="/images/sponsors/sponsor2.jpg" alt="Sponsor" class="img-fluid">
+                        <!-- Sponsor image removed -->
                     </div>
                 </div>
             </div>
