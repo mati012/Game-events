@@ -31,10 +31,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+        .csrf(csrf -> csrf.disable())  // Solo para desarrollo
         .authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-            .requestMatchers("/", "/home", "/search", "/events", "/css/**", "/js/**", "/images/**", "/static/**", "/register").permitAll()
-            .requestMatchers("/events/*/details").authenticated()
+            .requestMatchers("/", "/home", "/search", "/events", "/events/**", "/css/**", "/js/**", "/images/**", 
+                             "/static/**", "/register", "/login").permitAll()
             .anyRequest().authenticated()
         )
         .formLogin(formLogin ->
