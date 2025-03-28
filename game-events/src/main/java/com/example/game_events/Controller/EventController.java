@@ -28,21 +28,15 @@ public class EventController {
     public String listEvents(Model model) {
         model.addAttribute("events", eventService.getAllEvents());
         
-        // Añadir título para el layout
-        model.addAttribute("title", "All Events");
-        
-        // Especificar el fragmento de contenido
-        model.addAttribute("content", "events/list :: content");
-        
-        // Retornar el layout
-        return "layout";
+        // Return the events/list template directly
+        return "events/list";
     }
     
     @GetMapping("/search")
     public String searchEvents(@RequestParam(name = "keyword", required = false) String keyword,
-                               @RequestParam(name = "gameType", required = false) String gameType,
-                               @RequestParam(name = "location", required = false) String location,
-                               Model model) {
+                              @RequestParam(name = "gameType", required = false) String gameType,
+                              @RequestParam(name = "location", required = false) String location,
+                              Model model) {
         List<Event> searchResults;
         
         if (keyword != null && !keyword.isEmpty()) {
@@ -60,14 +54,8 @@ public class EventController {
         model.addAttribute("gameType", gameType);
         model.addAttribute("location", location);
         
-        // Añadir título para el layout
-        model.addAttribute("title", "Search Events");
-        
-        // Especificar el fragmento de contenido
-        model.addAttribute("content", "events/search :: content");
-        
-        // Retornar el layout
-        return "layout";
+        // Return the events/search template directly
+        return "events/search";
     }
     
     @GetMapping("/{id}/details")
@@ -77,13 +65,7 @@ public class EventController {
         
         model.addAttribute("event", event);
         
-        // Añadir título para el layout
-        model.addAttribute("title", "Event Details");
-        
-        // Especificar el fragmento de contenido
-        model.addAttribute("content", "events/details :: content");
-        
-        // Retornar el layout
-        return "layout";
+        // Return the events/details template directly
+        return "events/details";
     }
 }

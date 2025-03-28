@@ -25,14 +25,8 @@ public class AuthController {
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
         
-        // Añadir título para el layout
-        model.addAttribute("title", "Register");
-        
-        // Especificar el fragmento de contenido
-        model.addAttribute("content", "register :: content");
-        
-        // Retornar el layout
-        return "layout";
+        // Return the register template directly
+        return "register";
     }
     
     @PostMapping("/register")
@@ -42,13 +36,7 @@ public class AuthController {
             model.addAttribute("usernameError", "Username already exists");
             model.addAttribute("user", user);
             
-            // Añadir título para el layout
-            model.addAttribute("title", "Register");
-            
-            // Especificar el fragmento de contenido
-            model.addAttribute("content", "register :: content");
-            
-            return "layout";
+            return "register";
         }
         
         // Check if email already exists
@@ -56,13 +44,7 @@ public class AuthController {
             model.addAttribute("emailError", "Email already exists");
             model.addAttribute("user", user);
             
-            // Añadir título para el layout
-            model.addAttribute("title", "Register");
-            
-            // Especificar el fragmento de contenido
-            model.addAttribute("content", "register :: content");
-            
-            return "layout";
+            return "register";
         }
         
         // Register the user
@@ -73,14 +55,8 @@ public class AuthController {
     
     // Método adicional para la vista de login
     @GetMapping("/login")
-    public String showLoginForm(Model model) {
-        // Añadir título para el layout
-        model.addAttribute("title", "Login");
-        
-        // Especificar el fragmento de contenido
-        model.addAttribute("content", "login :: content");
-        
-        // Retornar el layout
-        return "layout";
+    public String showLoginForm() {
+        // Return the login template directly
+        return "login";
     }
 }

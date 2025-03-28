@@ -23,13 +23,7 @@ public class HomeController {
         model.addAttribute("featuredEvents", eventService.getFeaturedEvents());
         model.addAttribute("recentEvents", eventService.getRecentEvents());
         
-        // Añadir título para el layout
-        model.addAttribute("title", "Home");
-        
-        // Especificar el fragmento de contenido
-        model.addAttribute("content", "home :: content");
-        
-        // Retornar el layout en lugar de la página específica
-        return "layout";
+        // Return the home template directly
+        return "home";
     }
 }
