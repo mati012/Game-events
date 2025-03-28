@@ -73,7 +73,10 @@
                             <i class="fas fa-check-circle me-2"></i>
                             Registration successful! Please login.
                         </div>
-                        
+                        <div th:if="${param.required}" class="alert alert-warning">
+                            <i class="fas fa-info-circle me-2"></i>
+                            You need to be logged in to access that page.
+                        </div>
                         <form th:action="@{/login}" method="post">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>

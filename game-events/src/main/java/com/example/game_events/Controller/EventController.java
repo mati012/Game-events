@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.game_events.Model.Event;
 import com.example.game_events.Service.EventService;
 import com.example.game_events.Service.EventServiceImpl;
-
 @Controller
 @RequestMapping("/events")
 public class EventController {
@@ -27,8 +26,6 @@ public class EventController {
     @GetMapping("")
     public String listEvents(Model model) {
         model.addAttribute("events", eventService.getAllEvents());
-        
-        // Return the events/list template directly
         return "events/list";
     }
     
@@ -54,7 +51,6 @@ public class EventController {
         model.addAttribute("gameType", gameType);
         model.addAttribute("location", location);
         
-        // Return the events/search template directly
         return "events/search";
     }
     
@@ -65,7 +61,6 @@ public class EventController {
         
         model.addAttribute("event", event);
         
-        // Return the events/details template directly
         return "events/details";
     }
 }

@@ -25,17 +25,20 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     
-    @Transactional(readOnly = true) // Add this annotation
+    @Transactional(readOnly = true) // Añadir esta anotación
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
         
-        // The rest of your code...
+        // Inicializar roles explícitamente si es necesario
+        Set<Role> roles = user.getRoles();
+        roles.size(); // Forzar inicialización
+        
         return new org.springframework.security.core.userdetails.User(
             user.getUsername(),
             user.getPassword(),
-            getAuthorities(user.getRoles())
+            getAuthorities(roles)
         );
     }
     
@@ -44,4 +47,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
-}
+} 
