@@ -27,7 +27,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Estilos para el hero banner */
 .hero-banner {
-    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/game-events/images/default-event.jpg');
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('../images/default-event.jpg');
     background-size: cover;
     background-position: center;
     padding: 100px 0;
