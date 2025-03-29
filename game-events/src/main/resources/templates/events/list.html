@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>All Events</title>
+    <title>Todos los Eventos</title>
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <!-- Font Awesome -->
@@ -33,29 +33,29 @@
                         <a class="nav-link" th:href="@{/}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/events}">Events</a>
+                        <a class="nav-link active" th:href="@{/events}">Eventos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/events/search}">Search</a>
+                        <a class="nav-link" th:href="@{/events/search}">Buscar</a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
-                        <a class="nav-link" th:href="@{/login}">Login</a>
+                        <a class="nav-link" th:href="@{/login}">Iniciar Sesión</a>
                     </li>
                     <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
-                        <a class="nav-link" th:href="@{/register}">Register</a>
+                        <a class="nav-link" th:href="@{/register}">Registrarse</a>
                     </li>
                     <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <span th:text="${#authentication.name}">Username</span>
+                            <span th:text="${#authentication.name}">Usuario</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                          
                             <li>
                                 <form th:action="@{/logout}" method="post">
-                                    <button class="dropdown-item" type="submit">Logout</button>
+                                    <button class="dropdown-item" type="submit">Cerrar Sesión</button>
                                 </form>
                             </li>
                         </ul>
@@ -67,11 +67,11 @@
 
         <div class="row mb-4 align-items-center">
             <div class="col-md-6">
-                <h1>All Gaming Events</h1>
+                <h1>Todos los Eventos de Gaming</h1>
             </div>
             <div class="col-md-6 text-md-end">
                 <a th:href="@{/events/search}" class="btn btn-primary">
-                    <i class="fas fa-search me-2"></i> Advanced Search
+                    <i class="fas fa-search me-2"></i> Búsqueda Avanzada
                 </a>
             </div>
         </div>
@@ -79,44 +79,50 @@
         <div class="row">
             <div class="col-md-4 mb-4" th:each="event : ${events}">
                 <div class="card h-100 event-card">
-                    <div class="featured-badge" th:if="${event.featured}">Featured</div>
-                    <!-- Image placeholder -->
+                    <div class="featured-badge" th:if="${event.featured}">Destacado</div>
+                    <!-- Imagen placeholder -->
                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
                         <i class="fas fa-gamepad fa-3x text-secondary"></i>
                     </div>
                     <div class="card-body">
-                        <h5 class="card-title" th:text="${event.name}">Event Name</h5>
-                        <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Description</p>
+                        <h5 class="card-title" th:text="${event.name}">Nombre del Evento</h5>
+                        <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Descripción</p>
                         <div class="event-details">
                             <div class="event-location">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <span th:text="${event.location}">Location</span>
+                                <span th:text="${event.location}">Ubicación</span>
                             </div>
                             <div class="event-date">
                                 <i class="far fa-calendar-alt"></i>
-                                <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Date</span>
+                                <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Fecha</span>
                             </div>
                             <div class="event-type">
-                                <span class="badge bg-secondary" th:text="${event.gameType}">Game Type</span>
+                                <span class="badge bg-secondary" th:text="${event.gameType}">Tipo de Juego</span>
                             </div>
                             <div class="event-participants">
                                 <i class="fas fa-users"></i>
-                                <span th:text="${event.currentParticipants + ' / ' + event.maxParticipants}">Participants</span>
+                                <span th:text="${event.currentParticipants + ' / ' + event.maxParticipants}">Participantes</span>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer">
-                        <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">View Details</a>
+                        <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">Ver Detalles</a>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- If no events found -->
+        <!-- Si no se encuentran eventos -->
         <div class="alert alert-info" th:if="${events.empty}">
             <i class="fas fa-info-circle me-2"></i>
-            No events found. Check back later or try a different search.
+            No se encontraron eventos. Vuelve más tarde o intenta una búsqueda diferente.
         </div>
     </th:block>
 </body>
 </html>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <!-- Custom JS -->
+     
