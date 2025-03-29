@@ -8,12 +8,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.example.game_events.Service.CustomUserDetailsService;
@@ -21,26 +17,25 @@ import com.example.game_events.Service.CustomUserDetailsService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-
+    
     @Autowired
     private CustomUserDetailsService userDetailsService;
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
         .csrf(csrf -> csrf.disable())  // Solo para desarrollo
         .authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
-            .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**", 
-                             "/static/**", "/register", "/login", "/error", "/h2-console/**").permitAll()
+            .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**",
+                          "/static/**", "/register", "/login", "/error", "/h2-console/**").permitAll()
             .requestMatchers("/events/search", "/events/*/details", "/events/**").authenticated()
             .anyRequest().authenticated()
         )
         .formLogin(formLogin ->
             formLogin
                 .loginPage("/login")
-                .defaultSuccessUrl("/home")
-                .defaultSuccessUrl("/events", true)
+                .defaultSuccessUrl("/events", true)  // Solo una URL de éxito
                 .permitAll()
         )
         .logout(logout ->
@@ -48,14 +43,16 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/home")
                 .permitAll()
         )
-     
         .headers(headers -> 
             headers.frameOptions(frameOptions -> frameOptions.sameOrigin())
         );
         
+        // Configurar el proveedor de autenticación
+        http.authenticationProvider(authenticationProvider());
+        
         return http.build();
     }
-
+    
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration authConfig) throws Exception {
@@ -70,16 +67,7 @@ public class SecurityConfig {
         return provider;
     }
     
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-            .username("admin")
-            .password("admin123")
-            .roles("USER")
-            .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+    // Eliminar el método userDetailsService() que crea el usuario en memoria
     
     @Bean
     public PasswordEncoder passwordEncoder() {
