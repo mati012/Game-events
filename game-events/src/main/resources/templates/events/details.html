@@ -56,9 +56,7 @@
                             <span th:text="${#authentication.name}">Username</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" th:href="@{/profile}">My Profile</a></li>
-                            <li><a class="dropdown-item" th:href="@{/my-events}">My Events</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                         
                             <li>
                                 <form th:action="@{/logout}" method="post">
                                     <button class="dropdown-item" type="submit">Logout</button>
