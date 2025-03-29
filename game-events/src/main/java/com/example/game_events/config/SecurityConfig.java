@@ -24,7 +24,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-        .csrf(csrf -> csrf.disable())  // Solo para desarrollo
         .authorizeHttpRequests(authorizeRequests ->
         authorizeRequests
             .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**",
@@ -47,7 +46,6 @@ public class SecurityConfig {
             headers.frameOptions(frameOptions -> frameOptions.sameOrigin())
         );
         
-        // Configurar el proveedor de autenticación
         http.authenticationProvider(authenticationProvider());
         
         return http.build();
@@ -67,7 +65,6 @@ public class SecurityConfig {
         return provider;
     }
     
-    // Eliminar el método userDetailsService() que crea el usuario en memoria
     
     @Bean
     public PasswordEncoder passwordEncoder() {

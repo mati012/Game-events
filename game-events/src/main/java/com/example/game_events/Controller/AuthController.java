@@ -25,13 +25,11 @@ public class AuthController {
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
         
-        // Return the register template directly
         return "register";
     }
     
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") User user, Model model) {
-        // Check if username already exists
         if (userService.existsByUsername(user.getUsername())) {
             model.addAttribute("usernameError", "Username already exists");
             model.addAttribute("user", user);
@@ -39,7 +37,6 @@ public class AuthController {
             return "register";
         }
         
-        // Check if email already exists
         if (userService.existsByEmail(user.getEmail())) {
             model.addAttribute("emailError", "Email already exists");
             model.addAttribute("user", user);
@@ -47,16 +44,13 @@ public class AuthController {
             return "register";
         }
         
-        // Register the user
         userService.registerUser(user);
         
         return "redirect:/login?registered";
     }
     
-    // Método adicional para la vista de login
     @GetMapping("/login")
     public String showLoginForm() {
-        // Return the login template directly
         return "login";
     }
 }

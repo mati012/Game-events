@@ -23,7 +23,6 @@ public class HomeController {
         model.addAttribute("featuredEvents", eventService.getFeaturedEvents());
         model.addAttribute("recentEvents", eventService.getRecentEvents());
         
-        // Return the home template directly
         return "home";
     }
 }
