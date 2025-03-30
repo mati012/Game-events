@@ -1,17 +1,5 @@
-FROM mysql/mysql-server:latest
-
-ENV MYSQL_ROOT_PASSWORD=root
-ENV MYSQL_DATABASE=app
-ENV MYSQL_USER=app
-ENV MYSQL_PASSWORD=app
-
-
 FROM openjdk:17-jdk-slim
-
 WORKDIR /app
-
 COPY target/*.jar app.jar
-
 EXPOSE 8080
-
 ENTRYPOINT ["java", "-jar", "app.jar"]
