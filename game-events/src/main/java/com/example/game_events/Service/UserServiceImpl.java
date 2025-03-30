@@ -17,93 +17,111 @@ import com.example.game_events.Repository.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+    private final RoleRepository roleRepository;
+
     @Autowired
-    private RoleRepository roleRepository;
-    
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, 
+                           PasswordEncoder passwordEncoder,
+                           RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
-    
+
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
-    
+
     @Override
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
-    
+
     @Override
     public Optional<User> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
-    
+
     @Override
     @Transactional
     public User registerUser(User user) {
-        // Codificar la contraseña
+        validateNewUser(user);
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
-        // Inicializar roles si es null
+
         if (user.getRoles() == null) {
             user.setRoles(new HashSet<>());
         }
-        
-        // Buscar el rol USER o crearlo si no existe
+
         Role userRole = roleRepository.findByName("USER")
                 .orElseGet(() -> {
                     Role newRole = new Role("USER");
                     return roleRepository.save(newRole);
                 });
-        
-        // Añadir el rol al usuario
+
         user.getRoles().add(userRole);
-        
-        // Guardar y devolver el usuario
+
         return userRepository.save(user);
     }
-    
+
     @Override
+    @Transactional
     public User updateUser(User user) {
-        if (user.getId() != null) {
-            Optional<User> existingUser = userRepository.findById(user.getId());
-            if (existingUser.isPresent()) {
-                User currentUser = existingUser.get();
-                
-                // Solo codificar la contraseña si ha cambiado
-                if (!user.getPassword().equals(currentUser.getPassword()) && 
-                    !user.getPassword().startsWith("$2a$")) {
-                    user.setPassword(passwordEncoder.encode(user.getPassword()));
-                }
-                
-                // Mantener los roles existentes si no se proporcionan nuevos
-                if (user.getRoles() == null || user.getRoles().isEmpty()) {
-                    user.setRoles(currentUser.getRoles());
-                }
+        validateExistingUser(user);
+
+        Optional<User> existingUserOpt = userRepository.findById(user.getId());
+        if (existingUserOpt.isPresent()) {
+            User existingUser = existingUserOpt.get();
+
+            // Codificar la contraseña solo si ha cambiado
+            if (isPasswordChanged(user, existingUser)) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+
+            if (user.getRoles() == null || user.getRoles().isEmpty()) {
+                user.setRoles(existingUser.getRoles());
             }
         }
+
         return userRepository.save(user);
     }
-    
+
     @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
-    
+
     @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
-    
+
     @Override
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    private void validateNewUser(User user) {
+        if (existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya existe: " + user.getUsername());
+        }
+        if (existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("El correo electrónico ya existe: " + user.getEmail());
+        }
+    }
+
+    private void validateExistingUser(User user) {
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("El ID del usuario no puede ser nulo para la actualización.");
+        }
+    }
+
+    private boolean isPasswordChanged(User newUser, User existingUser) {
+        return !newUser.getPassword().equals(existingUser.getPassword()) &&
+               !newUser.getPassword().startsWith("$2a$");
     }
 }

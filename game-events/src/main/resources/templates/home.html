@@ -1,31 +1,23 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio - GameEvents</title>
+    <title>Home - GameEvents</title>
     
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts - Roboto and Orbitron -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
-    <!-- Estilos CSS personalizados -->
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <!-- Estilos Personalizados -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
     <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" th:href="@{/}">
-                <span class="game-logo">GameEvents</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+            <a class="navbar-brand" th:href="@{/}">GameEvents</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -37,9 +29,6 @@
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/events}">Eventos</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/events/search}">Buscar</a>
-                    </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item" th:if="${#authorization.expression('!isAuthenticated()')}">
@@ -49,7 +38,7 @@
                         <a class="nav-link" th:href="@{/register}">Registrarse</a>
                     </li>
                     <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
                             <span th:text="${#authentication.name}">Usuario</span>
                         </a>
@@ -66,44 +55,32 @@
         </div>
     </nav>
 
-    <!-- Contenido Principal -->
-    <main class="container my-4">
-        <!-- Banner Principal -->
-        <div class="jumbotron hero-banner text-white">
-            <div class="container">
-                <h1 class="display-4">Encuentra Tu Próxima Aventura Gaming</h1>
-                <p class="lead">Únete a eventos de juegos, torneos y encuentros en tu área</p>
-                <a th:href="@{/events}" class="btn btn-primary btn-lg">Explorar Eventos</a>
+    <!-- Encabezado -->
+    <header class="container my-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1>Bienvenido a GameEvents</h1>
+                <p class="text-muted">¡Descubre y únete a eventos increíbles cerca de ti!</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a th:href="@{/events}" class="btn btn-primary">Explorar Eventos</a>
             </div>
         </div>
+    </header>
 
-        <!-- Eventos Destacados -->
-        <section class="mb-5">
-            <h2 class="section-title">Eventos Destacados</h2>
+    <!-- Contenido Principal -->
+    <main class="container">
+        <section>
+            <h2>Eventos Destacados</h2>
             <div class="row">
                 <div class="col-md-4 mb-4" th:each="event : ${featuredEvents}">
-                    <div class="card h-100 event-card">
-                        <div class="featured-badge">Destacado</div>
-                        <!-- Imagen placeholder -->
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
-                            <i class="fas fa-gamepad fa-3x text-secondary"></i>
+                    <div class="card h-100">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                            <i class="fas fa-star fa-4x text-warning"></i>
                         </div>
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.name}">Nombre del Evento</h5>
                             <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Descripción</p>
-                            <div class="event-details">
-                                <div class="event-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span th:text="${event.location}">Ubicación</span>
-                                </div>
-                                <div class="event-date">
-                                    <i class="far fa-calendar-alt"></i>
-                                    <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Fecha</span>
-                                </div>
-                                <div class="event-type">
-                                    <span class="badge bg-secondary" th:text="${event.gameType}">Tipo de Juego</span>
-                                </div>
-                            </div>
                         </div>
                         <div class="card-footer">
                             <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">Ver Detalles</a>
@@ -111,70 +88,37 @@
                     </div>
                 </div>
             </div>
-            <div class="text-center mt-3">
-                <a th:href="@{/events}" class="btn btn-outline-secondary">Ver Todos los Eventos</a>
-            </div>
         </section>
 
-        <!-- Eventos Recientes -->
-        <section class="mb-5">
-            <h2 class="section-title">Eventos Recientes</h2>
+        <section>
+            <h2>Eventos Recientes</h2>
             <div class="row">
                 <div class="col-md-4 mb-4" th:each="event : ${recentEvents}">
-                    <div class="card h-100 event-card">
-                        <!-- Imagen placeholder -->
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center">
-                            <i class="fas fa-gamepad fa-3x text-secondary"></i>
+                    <div class="card h-100">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 150px;">
+                            <i class="fas fa-clock fa-4x text-secondary"></i>
                         </div>
                         <div class="card-body">
                             <h5 class="card-title" th:text="${event.name}">Nombre del Evento</h5>
                             <p class="card-text" th:text="${#strings.abbreviate(event.description, 100)}">Descripción</p>
-                            <div class="event-details">
-                                <div class="event-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span th:text="${event.location}">Ubicación</span>
-                                </div>
-                                <div class="event-date">
-                                    <i class="far fa-calendar-alt"></i>
-                                    <span th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy, HH:mm')}">Fecha</span>
-                                </div>
-                                <div class="event-type">
-                                    <span class="badge bg-secondary" th:text="${event.gameType}">Tipo de Juego</span>
-                                </div>
-                            </div>
                         </div>
                         <div class="card-footer">
                             <a th:href="@{/events/{id}/details(id=${event.id})}" class="btn btn-outline-primary">Ver Detalles</a>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Banners Promocionales -->
-        <section class="mb-5">
-            <h2 class="section-title">Patrocinado Por</h2>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="ad-banner">
-                        <h4>¿Interesado en patrocinar GameEvents?</h4>
-                        <p>Alcanza a miles de gamers en tu área</p>
-                        <a href="#" class="btn btn-primary">Conviértete en Patrocinador</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Pie de página -->
-    <footer class="footer mt-auto py-3 bg-dark text-white">
-        <div class="container text-center">
-            <span>GameEvents &copy; 2025 - ¡Conéctate con Gamers a Tu Alrededor!</span>
+    <!-- Pie de Página -->
+    <footer class="footer mt-auto py-3 bg-dark text-white text-center">
+        <div class="container">
+            GameEvents &copy; 2025
         </div>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}" th:attr="nonce=${nonce}"></script>
 </body>
 </html>

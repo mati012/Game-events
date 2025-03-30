@@ -1,24 +1,16 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${event.name} + ' - GameEvents'">Detalles del Evento - GameEvents</title>
     
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts - Roboto and Orbitron -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
     <!-- Estilos CSS personalizados -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
-
-
 </head>
 <body>
     <!-- Navegación -->
@@ -27,7 +19,7 @@
             <a class="navbar-brand" th:href="@{/}">
                 <span class="game-logo">GameEvents</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -51,12 +43,11 @@
                         <a class="nav-link" th:href="@{/register}">Registrarse</a>
                     </li>
                     <li class="nav-item dropdown" th:if="${#authorization.expression('isAuthenticated()')}">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
                             <span th:text="${#authentication.name}">Usuario</span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                         
                             <li>
                                 <form th:action="@{/logout}" method="post">
                                     <button class="dropdown-item" type="submit">Cerrar Sesión</button>
@@ -93,17 +84,17 @@
                 </div>
             </div>
             
-            <!-- Contenido del Evento -->
+            <!-- Información Principal -->
             <div class="row">
-                <!-- Imagen del Evento -->
+                <!-- Imagen y Detalles -->
                 <div class="col-md-5">
                     <div class="event-image-container mb-4">
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
                             <i class="fas fa-gamepad fa-5x text-secondary"></i>
                         </div>
                     </div>
                     
-                    <!-- Tarjeta de Detalles del Evento -->
+                    <!-- Detalles del Evento -->
                     <div class="card mb-4">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">Detalles del Evento</h5>
@@ -126,59 +117,16 @@
                             </li>
                         </ul>
                     </div>
-                    
-                    <!-- Botón de Registro -->
-                    <div class="mb-4" th:if="${#authorization.expression('isAuthenticated()')}">
-                        <button class="btn btn-success w-100 py-2" 
-                                th:if="${event.currentParticipants < event.maxParticipants}">
-                            <i class="fas fa-check-circle me-2"></i> Registrarse para el Evento
-                        </button>
-                        <button class="btn btn-secondary w-100 py-2" disabled 
-                                th:unless="${event.currentParticipants < event.maxParticipants}">
-                            <i class="fas fa-ban me-2"></i> Evento Completo
-                        </button>
-                    </div>
-                    
-                    <!-- Iniciar Sesión para Registrarse -->
-                    <div class="mb-4" th:if="${#authorization.expression('!isAuthenticated()')}">
-                        <div class="alert alert-info">
-                            <a th:href="@{/login}" class="alert-link">Inicia sesión</a> para registrarte en este evento
-                        </div>
-                    </div>
                 </div>
                 
-                <!-- Descripción del Evento -->
+                <!-- Descripción -->
                 <div class="col-md-7">
                     <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Acerca de Este Evento</h5>
                         </div>
                         <div class="card-body">
-                            <p class="card-text" th:text="${event.description}">
-                                La descripción del evento se mostrará aquí.
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <!-- Lista de Participantes -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="mb-0">Participantes</h5>
-                        </div>
-                        <div class="card-body">
-                            <div th:if="${event.participants != null and !event.participants.empty}">
-                                <div class="participant-list">
-                                    <div class="participant-item" th:each="participant : ${event.participants}">
-                                        <div class="participant-avatar bg-primary text-white d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; border-radius: 50%;">
-                                            <span th:text="${#strings.substring(participant.username, 0, 1).toUpperCase()}">U</span>
-                                        </div>
-                                        <span class="participant-name" th:text="${participant.username}">Usuario</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div th:if="${event.participants == null or event.participants.empty}" class="text-center">
-                                <p class="text-muted">Aún no se han registrado participantes. ¡Sé el primero!</p>
-                            </div>
+                            <p class="card-text" th:text="${event.description}">Descripción del evento aquí.</p>
                         </div>
                     </div>
                 </div>
@@ -186,15 +134,15 @@
         </div>
     </main>
 
-    <!-- Pie de página -->
+    <!-- Pie de Página -->
     <footer class="footer mt-auto py-3 bg-dark text-white">
         <div class="container text-center">
             <span>GameEvents &copy; 2025 - ¡Conéctate con Gamers a Tu Alrededor!</span>
         </div>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Scripts -->
+    <script th:src="@{/js/jquery.min.js}" th:attr="nonce=${nonce}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}" th:attr="nonce=${nonce}"></script>
 </body>
 </html>

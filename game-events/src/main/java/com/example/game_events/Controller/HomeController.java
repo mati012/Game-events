@@ -6,23 +6,27 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.game_events.Service.EventService;
-import com.example.game_events.Service.EventServiceImpl;
+
+import java.util.UUID;
 
 @Controller
 public class HomeController {
-    
+
     private final EventService eventService;
-    
+
     @Autowired
-    public HomeController(EventServiceImpl eventService) {
+    public HomeController(EventService eventService) {
         this.eventService = eventService;
     }
-    
+
     @GetMapping({"/", "/home"})
     public String home(Model model) {
+        String nonce = UUID.randomUUID().toString();
+
         model.addAttribute("featuredEvents", eventService.getFeaturedEvents());
         model.addAttribute("recentEvents", eventService.getRecentEvents());
-        
+        model.addAttribute("nonce", nonce);
+
         return "home";
     }
 }
