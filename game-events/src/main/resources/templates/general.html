@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${error}">Error</title>
+    <!-- Las cabeceras CSP ya deberían estar aplicadas por el filtro -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h2 th:text="${error}">Error</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="lead" th:text="${message}">Mensaje de error</p>
+                        <hr>
+                        <a th:href="@{/}" class="btn btn-primary">Volver a la página principal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts al final para mejorar el rendimiento de carga -->
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>

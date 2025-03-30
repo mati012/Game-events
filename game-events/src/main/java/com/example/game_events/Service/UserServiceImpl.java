@@ -77,7 +77,6 @@ public class UserServiceImpl implements UserService {
         if (existingUserOpt.isPresent()) {
             User existingUser = existingUserOpt.get();
 
-            // Codificar la contraseña solo si ha cambiado
             if (isPasswordChanged(user, existingUser)) {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }

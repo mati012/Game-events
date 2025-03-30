@@ -12,6 +12,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.example.game_events.Service.CustomUserDetailsService;
 
@@ -46,21 +48,40 @@ public class SecurityConfig {
                 .permitAll()
         )
         .headers(headers -> 
-            headers.addHeaderWriter((request, response) -> {
-                String nonce = java.util.UUID.randomUUID().toString().replace("-", "");
-                
-                response.setHeader("Content-Security-Policy", 
-                    "default-src 'self'; " +
-                    "script-src 'self' 'nonce-" + nonce + "'; " +
-                    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-                    "font-src 'self' https://fonts.gstatic.com; " +
-                    "img-src 'self' data:; " +
-                    "connect-src 'self'; " +
-                    "frame-src 'self';"
-                );
-
-                request.setAttribute("cspNonce", nonce);
-            })
+            headers
+                .contentSecurityPolicy(csp -> 
+                    csp.policyDirectives(
+                        "default-src 'self'; " +
+                        "script-src 'self' 'unsafe-eval'; " +  
+                        "style-src 'self' https://fonts.googleapis.com; " + 
+                        "font-src 'self' https://fonts.gstatic.com; " +
+                        "img-src 'self' data:; " +
+                        "connect-src 'self'; " +
+                        "frame-src 'self'; " +
+                        "base-uri 'self'; " +
+                        "form-action 'self'; " +
+                        "frame-ancestors 'self'; " +
+                        "object-src 'none'; " +
+                        "upgrade-insecure-requests"
+                    )
+                )
+                .referrerPolicy(referrer -> 
+                    referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
+                )
+                .frameOptions(frame -> frame.sameOrigin())
+                .xssProtection(xss -> xss.disable())  
+                .addHeaderWriter((request, response) -> {
+                    if (response.containsHeader("Set-Cookie")) {
+                        String header = response.getHeader("Set-Cookie");
+                        if (header.contains("JSESSIONID")) {
+                            String newHeader = header;
+                            if (!newHeader.contains("SameSite")) {
+                                newHeader += "; SameSite=Strict";
+                            }
+                            response.setHeader("Set-Cookie", newHeader);
+                        }
+                    }
+                })
         )
         .csrf(csrf -> 
             csrf.ignoringRequestMatchers("/h2-console/**") 
@@ -72,8 +93,14 @@ public class SecurityConfig {
             config.addAllowedHeader("*");
             config.addAllowedMethod("*");
             return config;
-        }));
-
+        }))
+        .sessionManagement(session -> 
+            session
+                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .maximumSessions(1)
+                .expiredUrl("/login?expired")
+        );
+        
         http.authenticationProvider(authenticationProvider());
 
         return http.build();
@@ -96,5 +123,14 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public jakarta.servlet.http.Cookie customCookieConfig() {
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("JSESSIONID", "");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        return cookie;
     }
 }

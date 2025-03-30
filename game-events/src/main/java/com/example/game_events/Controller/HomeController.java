@@ -11,22 +11,22 @@ import java.util.UUID;
 
 @Controller
 public class HomeController {
-
+    
     private final EventService eventService;
-
+    
     @Autowired
     public HomeController(EventService eventService) {
         this.eventService = eventService;
     }
-
-    @GetMapping({"/", "/home"})
+    
+    @GetMapping({"/", "/home", "/Events"})
     public String home(Model model) {
         String nonce = UUID.randomUUID().toString();
-
+        
         model.addAttribute("featuredEvents", eventService.getFeaturedEvents());
         model.addAttribute("recentEvents", eventService.getRecentEvents());
         model.addAttribute("nonce", nonce);
-
+        
         return "home";
     }
 }
