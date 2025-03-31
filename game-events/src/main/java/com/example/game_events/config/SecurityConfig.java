@@ -52,7 +52,7 @@ public class SecurityConfig {
                 .contentSecurityPolicy(csp -> 
                     csp.policyDirectives(
                         "default-src 'self'; " +
-                        "script-src 'self' 'unsafe-eval'; " +  
+                        "script-src 'self'; " +  
                         "style-src 'self' https://fonts.googleapis.com; " + 
                         "font-src 'self' https://fonts.gstatic.com; " +
                         "img-src 'self' data:; " +
@@ -70,18 +70,6 @@ public class SecurityConfig {
                 )
                 .frameOptions(frame -> frame.sameOrigin())
                 .xssProtection(xss -> xss.disable())  
-                .addHeaderWriter((request, response) -> {
-                    if (response.containsHeader("Set-Cookie")) {
-                        String header = response.getHeader("Set-Cookie");
-                        if (header.contains("JSESSIONID")) {
-                            String newHeader = header;
-                            if (!newHeader.contains("SameSite")) {
-                                newHeader += "; SameSite=Strict";
-                            }
-                            response.setHeader("Set-Cookie", newHeader);
-                        }
-                    }
-                })
         )
         .csrf(csrf -> 
             csrf.ignoringRequestMatchers("/h2-console/**") 
@@ -123,14 +111,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-    
-    @Bean
-    public jakarta.servlet.http.Cookie customCookieConfig() {
-        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("JSESSIONID", "");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-
-        return cookie;
     }
 }
