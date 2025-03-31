@@ -36,10 +36,8 @@
                     </div>
                     <div class="card-body">
                         <form th:action="@{/register}" method="post">
-                            <!-- Token CSRF -->
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
-                            <!-- Campo Nombre de Usuario -->
                             <div class="mb-3">
                                 <label for="username" class="form-label">Nombre de Usuario</label>
                                 <input type="text" id="username" name="username" class="form-control"
@@ -47,7 +45,6 @@
                                 <div class="text-danger" th:if="${usernameError}" th:text="${usernameError}"></div>
                             </div>
 
-                            <!-- Campo Correo Electrónico -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo Electrónico</label>
                                 <input type="email" id="email" name="email" class="form-control"
@@ -55,21 +52,18 @@
                                 <div class="text-danger" th:if="${emailError}" th:text="${emailError}"></div>
                             </div>
 
-                            <!-- Campo Contraseña -->
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <input type="password" id="password" name="password" class="form-control"
                                        placeholder="Ingresa tu contraseña" required>
                             </div>
 
-                            <!-- Campo Confirmación de Contraseña -->
                             <div class="mb-3">
                                 <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
                                 <input type="password" id="confirmPassword" name="confirmPassword" class="form-control"
                                        placeholder="Confirma tu contraseña" required>
                             </div>
 
-                            <!-- Botón de Registro -->
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-success">
                                     <i class="fas fa-user-plus me-2"></i> Registrarse
