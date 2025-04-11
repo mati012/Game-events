@@ -3,19 +3,22 @@ package com.example.game_events.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.example.game_events.Service.CustomUserDetailsService;
+import com.example.game_events.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,71 +26,97 @@ public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+    
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthFilter;
 
+    // Configuración para endpoints de API con JWT
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-        .authorizeHttpRequests(authorizeRequests ->
-            authorizeRequests
-                .requestMatchers("/", "/home", "/css/**", "/js/**", "/webfonts/**", "/images/**",
-                                "/static/**", "/register", "/login", "/error").permitAll()
-                .requestMatchers("/events/search", "/events/*/details", "/events/**").authenticated()
-                .requestMatchers("/h2-console/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-        )
-        .formLogin(formLogin ->
-            formLogin
-                .loginPage("/login")
-                .defaultSuccessUrl("/events", true)
-                .permitAll()
-        )
-        .logout(logout ->
-            logout
-                .logoutSuccessUrl("/home")
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-        )
-        .headers(headers -> 
-            headers
-                .contentSecurityPolicy(csp -> 
-                    csp.policyDirectives(
-                        "default-src 'self'; " +
-                        "script-src 'self'; " +  
-                        "style-src 'self' https://fonts.googleapis.com; " + 
-                        "font-src 'self' https://fonts.gstatic.com; " +
-                        "img-src 'self' data:; " +
-                        "connect-src 'self'; " +
-                        "frame-src 'self'; " +
-                        "base-uri 'self'; " +
-                        "form-action 'self'; " +
-                        "frame-ancestors 'self'; " +
-                        "object-src 'none'; " +
-                        "upgrade-insecure-requests"
+            .securityMatcher("/api/**")  // Esta configuración solo aplica a las rutas que comienzan con /api/
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests
+                    .requestMatchers("/api/auth/**").permitAll()
+                    .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> 
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+            
+        return http.build();
+    }
+
+    // Configuración para la aplicación web normal
+    @Bean
+    @Order(2)
+    public SecurityFilterChain webSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(authorizeRequests ->
+                authorizeRequests
+                    .requestMatchers("/", "/home", "/css/**", "/js/**", "/webfonts/**", "/images/**",
+                                    "/static/**", "/register", "/login", "/error").permitAll()
+                    .requestMatchers("/events/search", "/events/*/details", "/events/**").authenticated()
+                    .requestMatchers("/h2-console/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .formLogin(formLogin ->
+                formLogin
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/events", true)
+                    .permitAll()
+            )
+            .logout(logout ->
+                logout
+                    .logoutSuccessUrl("/home")
+                    .deleteCookies("JSESSIONID")
+                    .permitAll()
+            )
+            .headers(headers -> 
+                headers
+                    .contentSecurityPolicy(csp -> 
+                        csp.policyDirectives(
+                            "default-src 'self'; " +
+                            "script-src 'self'; " +  
+                            "style-src 'self' https://fonts.googleapis.com; " + 
+                            "font-src 'self' https://fonts.gstatic.com; " +
+                            "img-src 'self' data:; " +
+                            "connect-src 'self'; " +
+                            "frame-src 'self'; " +
+                            "base-uri 'self'; " +
+                            "form-action 'self'; " +
+                            "frame-ancestors 'self'; " +
+                            "object-src 'none'; " +
+                            "upgrade-insecure-requests"
+                        )
                     )
-                )
-                .referrerPolicy(referrer -> 
-                    referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
-                )
-                .frameOptions(frame -> frame.sameOrigin())
-                .xssProtection(xss -> xss.disable())  
-        )
-        .csrf(csrf -> 
-            csrf.ignoringRequestMatchers("/h2-console/**") 
-        )
-        .cors(cors -> cors.configurationSource(request -> {
-            CorsConfiguration config = new CorsConfiguration();
-            config.setAllowCredentials(true);
-            config.addAllowedOriginPattern("http://localhost:[*]"); 
-            config.addAllowedHeader("*");
-            config.addAllowedMethod("*");
-            return config;
-        }))
-        .sessionManagement(session -> 
-            session
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
-                .maximumSessions(1)
-                .expiredUrl("/login?expired")
-        );
+                    .referrerPolicy(referrer -> 
+                        referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.SAME_ORIGIN)
+                    )
+                    .frameOptions(frame -> frame.sameOrigin())
+                    .xssProtection(xss -> xss.disable())  
+            )
+            .csrf(csrf -> 
+                csrf.ignoringRequestMatchers("/h2-console/**") 
+            )
+            .cors(cors -> cors.configurationSource(request -> {
+                CorsConfiguration config = new CorsConfiguration();
+                config.setAllowCredentials(true);
+                config.addAllowedOriginPattern("http://localhost:[*]"); 
+                config.addAllowedHeader("*");
+                config.addAllowedMethod("*");
+                return config;
+            }))
+            .sessionManagement(session -> 
+                session
+                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                    .maximumSessions(1)
+                    .expiredUrl("/login?expired")
+            );
         
         http.authenticationProvider(authenticationProvider());
 
