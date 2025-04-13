@@ -136,6 +136,24 @@
 					</excludes>
 				</configuration>
 			</plugin>
+	<plugin>
+    <groupId>org.owasp</groupId>
+    <artifactId>dependency-check-maven</artifactId>
+    <version>9.2.0</version>
+    <configuration>
+        <nvdApiKey>70727981-6817-40b1-a95c-be3844331ed8</nvdApiKey>
+        <nvdApiDelay>3000</nvdApiDelay>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+
+
 		</plugins>
 	</build>
 
