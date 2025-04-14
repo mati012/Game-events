@@ -25,8 +25,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomUserDetailsService.class);
 
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     @Transactional(readOnly = true)

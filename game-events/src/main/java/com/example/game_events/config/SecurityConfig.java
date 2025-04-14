@@ -24,12 +24,14 @@ import com.example.game_events.security.JwtAuthenticationFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-    
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthFilter;
+private final CustomUserDetailsService userDetailsService;
+private final JwtAuthenticationFilter jwtAuthFilter;
 
+@Autowired
+public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthFilter) {
+    this.userDetailsService = userDetailsService;
+    this.jwtAuthFilter = jwtAuthFilter;
+}
     // Configuración para endpoints de API con JWT
     @Bean
     @Order(1)

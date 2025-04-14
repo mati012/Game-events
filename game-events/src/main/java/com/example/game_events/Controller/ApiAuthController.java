@@ -21,14 +21,17 @@ import com.example.game_events.Service.UserService;
 @RequestMapping("/api/auth")
 public class ApiAuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    
-    @Autowired
-    private JwtService jwtService;
-    
-    @Autowired
-    private UserService userService;
+ 
+        private final AuthenticationManager authenticationManager;
+        private final JwtService jwtService;
+        private final UserService userService;
+
+        @Autowired
+        public ApiAuthController(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService) {
+            this.authenticationManager = authenticationManager;
+            this.jwtService = jwtService;
+            this.userService = userService;
+        }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request) {
