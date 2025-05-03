@@ -16,22 +16,31 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.example.game_events.Service.CustomUserDetailsService;
 import com.example.game_events.security.JwtAuthenticationFilter;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-private final CustomUserDetailsService userDetailsService;
-private final JwtAuthenticationFilter jwtAuthFilter;
+    private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthFilter;
 
-@Autowired
-public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthFilter) {
-    this.userDetailsService = userDetailsService;
-    this.jwtAuthFilter = jwtAuthFilter;
-}
+    @Autowired
+    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthFilter) {
+        this.userDetailsService = userDetailsService;
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
+
     // Configuración para endpoints de API con JWT
     @Bean
     @Order(1)
@@ -83,8 +92,8 @@ public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthentica
                     .contentSecurityPolicy(csp -> 
                         csp.policyDirectives(
                             "default-src 'self'; " +
-                            "script-src 'self'; " +  
-                            "style-src 'self' https://fonts.googleapis.com; " + 
+                            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +  // Permitir JavaScript en línea
+                            "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "  + // Added 'unsafe-inline' for quick fix
                             "font-src 'self' https://fonts.gstatic.com; " +
                             "img-src 'self' data:; " +
                             "connect-src 'self'; " +
@@ -142,5 +151,27 @@ public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthentica
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    
+    @Bean
+    public HandlerInterceptor nonceInterceptor() {
+        return new HandlerInterceptor() {
+            @Override
+            public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+                String nonce = UUID.randomUUID().toString();
+                request.setAttribute("nonce", nonce);
+                return true;
+            }
+        };
+    }
+    
+    @Bean
+    public WebMvcConfigurer webMvcConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(nonceInterceptor());
+            }
+        };
     }
 }
