@@ -1,7 +1,12 @@
 package com.example.game_events.Controller;
 
-import com.example.game_events.Model.Event;
-import com.example.game_events.Service.EventService;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -10,14 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.when;
+import com.example.game_events.Model.Event;
+import com.example.game_events.Service.EventService;
 
 @SpringBootTest
 public class EventApiControllerTest {
@@ -28,80 +27,89 @@ public class EventApiControllerTest {
     @InjectMocks
     private EventApiController eventApiController;
 
-    private Event testEvent1;
-    private Event testEvent2;
+    private Event event1, event2;
     private List<Event> eventList;
 
     @BeforeEach
     public void setup() {
         // Configurar datos de prueba
-        testEvent1 = new Event();
-        testEvent1.setId(1L);
-        testEvent1.setName("Test Event 1");
-        testEvent1.setDescription("Test Description 1");
-        testEvent1.setDateTime(LocalDateTime.now());
-        testEvent1.setLocation("Test Location 1");
-        testEvent1.setGameType("Test Game Type 1");
-        testEvent1.setCurrentParticipants(5);
-        testEvent1.setMaxParticipants(10);
-        testEvent1.setFeatured(true);
+        event1 = new Event();
+        event1.setId(1L);
+        event1.setName("Test Event 1");
+        event1.setDescription("Description 1");
+        event1.setGameType("FPS");
+        event1.setLocation("Location 1");
 
-        testEvent2 = new Event();
-        testEvent2.setId(2L);
-        testEvent2.setName("Test Event 2");
-        testEvent2.setDescription("Test Description 2");
-        testEvent2.setDateTime(LocalDateTime.now().plusDays(1));
-        testEvent2.setLocation("Test Location 2");
-        testEvent2.setGameType("Test Game Type 2");
-        testEvent2.setCurrentParticipants(3);
-        testEvent2.setMaxParticipants(8);
-        testEvent2.setFeatured(false);
+        event2 = new Event();
+        event2.setId(2L);
+        event2.setName("Test Event 2");
+        event2.setDescription("Description 2");
+        event2.setGameType("RPG");
+        event2.setLocation("Location 2");
 
-        eventList = Arrays.asList(testEvent1, testEvent2);
+        eventList = Arrays.asList(event1, event2);
     }
 
     @Test
     public void testGetAllEvents() {
-        // Configurar mock
+        // Arrange
         when(eventService.getAllEvents()).thenReturn(eventList);
 
-        // Ejecutar método bajo prueba
+        // Act
         ResponseEntity<List<Event>> response = eventApiController.getAllEvents();
 
-        // Verificar resultados
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
         assertEquals("Test Event 1", response.getBody().get(0).getName());
         assertEquals("Test Event 2", response.getBody().get(1).getName());
+
+        verify(eventService).getAllEvents();
     }
 
     @Test
     public void testSearchEvents() {
-        // Configurar mock
-        when(eventService.searchEvents("test", "Test Game Type 1", "Test Location 1"))
-                .thenReturn(Arrays.asList(testEvent1));
+        // Arrange
+        when(eventService.searchEvents("test", "FPS", "Location 1")).thenReturn(Arrays.asList(event1));
 
-        // Ejecutar método bajo prueba
-        ResponseEntity<List<Event>> response = eventApiController.searchEvents(
-                "test", "Test Game Type 1", "Test Location 1");
+        // Act
+        ResponseEntity<List<Event>> response = eventApiController.searchEvents("test", "FPS", "Location 1");
 
-        // Verificar resultados
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
         assertEquals("Test Event 1", response.getBody().get(0).getName());
+
+        verify(eventService).searchEvents("test", "FPS", "Location 1");
     }
 
     @Test
     public void testGetEventById() {
-        // Configurar mock
-        when(eventService.getEventById(1L)).thenReturn(Optional.of(testEvent1));
+        // Arrange
+        when(eventService.getEventById(1L)).thenReturn(Optional.of(event1));
 
-        // Ejecutar método bajo prueba
+        // Act
         ResponseEntity<Event> response = eventApiController.getEventById(1L);
 
-        // Verificar resultados
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
         assertEquals("Test Event 1", response.getBody().getName());
+
+        verify(eventService).getEventById(1L);
+    }
+
+    @Test
+    public void testGetEventByIdNotFound() {
+        // Arrange
+        when(eventService.getEventById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            eventApiController.getEventById(99L);
+        });
+
+        assertEquals("Event not found", exception.getMessage());
+
+        verify(eventService).getEventById(99L);
     }
 }

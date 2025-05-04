@@ -1,7 +1,12 @@
 package com.example.game_events.Controller;
 
-import com.example.game_events.Model.Event;
-import com.example.game_events.Service.EventService;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,16 +14,8 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.ui.Model;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.example.game_events.Model.Event;
+import com.example.game_events.Service.EventService;
 
 @SpringBootTest
 public class HomeControllerTest {
@@ -26,14 +23,14 @@ public class HomeControllerTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private Model model;
+
     @InjectMocks
     private HomeController homeController;
 
-    private Event featuredEvent;
-    private Event recentEvent;
-    private List<Event> featuredEvents;
-    private List<Event> recentEvents;
-    private Model model;
+    private Event featuredEvent, recentEvent;
+    private List<Event> featuredEvents, recentEvents;
 
     @BeforeEach
     public void setup() {
@@ -41,41 +38,50 @@ public class HomeControllerTest {
         featuredEvent = new Event();
         featuredEvent.setId(1L);
         featuredEvent.setName("Featured Event");
-        featuredEvent.setDescription("Featured Description");
-        featuredEvent.setDateTime(LocalDateTime.now());
-        featuredEvent.setLocation("Featured Location");
-        featuredEvent.setGameType("Featured Game Type");
         featuredEvent.setFeatured(true);
 
         recentEvent = new Event();
         recentEvent.setId(2L);
         recentEvent.setName("Recent Event");
-        recentEvent.setDescription("Recent Description");
-        recentEvent.setDateTime(LocalDateTime.now().plusDays(1));
-        recentEvent.setLocation("Recent Location");
-        recentEvent.setGameType("Recent Game Type");
-        recentEvent.setFeatured(false);
 
         featuredEvents = Arrays.asList(featuredEvent);
         recentEvents = Arrays.asList(recentEvent);
 
-        model = mock(Model.class);
-        when(model.addAttribute(any(String.class), any())).thenReturn(model);
+        when(model.addAttribute(anyString(), any())).thenReturn(model);
     }
 
     @Test
     public void testHome() {
-        // Configurar mocks
+        // Arrange
         when(eventService.getFeaturedEvents()).thenReturn(featuredEvents);
         when(eventService.getRecentEvents()).thenReturn(recentEvents);
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = homeController.home(model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("home", viewName);
+        verify(eventService).getFeaturedEvents();
+        verify(eventService).getRecentEvents();
         verify(model).addAttribute(eq("featuredEvents"), eq(featuredEvents));
         verify(model).addAttribute(eq("recentEvents"), eq(recentEvents));
         verify(model).addAttribute(eq("nonce"), any(String.class));
+    }
+
+    @Test
+    public void testHomeWithNoEvents() {
+        // Arrange
+        when(eventService.getFeaturedEvents()).thenReturn(Arrays.asList());
+        when(eventService.getRecentEvents()).thenReturn(Arrays.asList());
+
+        // Act
+        String viewName = homeController.home(model);
+
+        // Assert
+        assertEquals("home", viewName);
+        verify(eventService).getFeaturedEvents();
+        verify(eventService).getRecentEvents();
+        verify(model).addAttribute(eq("featuredEvents"), eq(Arrays.asList()));
+        verify(model).addAttribute(eq("recentEvents"), eq(Arrays.asList()));
     }
 }

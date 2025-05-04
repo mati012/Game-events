@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class WebSecurityFilter implements Filter {
 
-    private static final String CSP_POLICY = 
+    public static final String CSP_POLICY = 
         "default-src 'self'; " +
         "script-src 'self' 'unsafe-eval'; " + // Si realmente necesitas eval(), mantenlo
         "style-src 'self' https://fonts.googleapis.com; " +

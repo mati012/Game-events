@@ -83,7 +83,7 @@ public class ErrorPageFilter implements Filter {
      * Wrapper para HttpServletResponse que permite aplicar cabeceras
      * después de que la respuesta se ha generado.
      */
-    private static class CSPResponseWrapper extends HttpServletResponseWrapper {
+    public static class CSPResponseWrapper extends HttpServletResponseWrapper {
         
         private boolean headersApplied = false;
         

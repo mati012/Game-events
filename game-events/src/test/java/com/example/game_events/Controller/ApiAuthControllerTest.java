@@ -1,12 +1,11 @@
 package com.example.game_events.Controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
-import com.example.game_events.Controller.ApiAuthController;
-import com.example.game_events.Model.AuthRequest;
-import com.example.game_events.Model.AuthResponse;
-import com.example.game_events.Model.User;
-import com.example.game_events.Service.JwtService;
-import com.example.game_events.Service.UserService;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,13 +18,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.example.game_events.Model.AuthRequest;
+import com.example.game_events.Model.AuthResponse;
+import com.example.game_events.Model.User;
+import com.example.game_events.Service.JwtService;
+import com.example.game_events.Service.UserService;
 
 @SpringBootTest
 public class ApiAuthControllerTest {
@@ -67,19 +64,62 @@ public class ApiAuthControllerTest {
 
     @Test
     public void testAuthenticateSuccess() {
-        // Configurar mocks
+        // Arrange
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
         when(jwtService.generateToken(userDetails)).thenReturn("test-jwt-token");
         when(userService.getUserByUsername("testuser")).thenReturn(Optional.of(user));
 
-        // Ejecutar método bajo prueba
+        // Act
         ResponseEntity<AuthResponse> response = apiAuthController.authenticate(authRequest);
 
-        // Verificar resultados
+        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("test-jwt-token", response.getBody().getToken());
         assertEquals("testuser", response.getBody().getUsername());
+        assertNull(response.getBody().getRole());
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService).generateToken(userDetails);
+        verify(userService).getUserByUsername("testuser");
+    }
+
+    @Test
+    public void testAuthenticateUserNotFound() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(jwtService.generateToken(userDetails)).thenReturn("test-jwt-token");
+        when(userService.getUserByUsername("testuser")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            apiAuthController.authenticate(authRequest);
+        });
+
+        assertEquals("Usuario no encontrado", exception.getMessage());
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService).generateToken(userDetails);
+        verify(userService).getUserByUsername("testuser");
+    }
+
+    @Test
+    public void testAuthenticateAuthenticationFailure() {
+        // Arrange
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenThrow(new RuntimeException("Invalid credentials"));
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            apiAuthController.authenticate(authRequest);
+        });
+
+        assertEquals("Invalid credentials", exception.getMessage());
+
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        verify(jwtService, never()).generateToken(any(UserDetails.class));
+        verify(userService, never()).getUserByUsername(anyString());
     }
 }

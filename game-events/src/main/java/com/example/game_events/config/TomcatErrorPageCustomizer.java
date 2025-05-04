@@ -57,7 +57,7 @@ public class TomcatErrorPageCustomizer {
             "upgrade-insecure-requests";
         
         @Override
-        protected void report(org.apache.catalina.connector.Request request, 
+        public void report(org.apache.catalina.connector.Request request, 
                               org.apache.catalina.connector.Response response, 
                               java.lang.Throwable throwable) {
             

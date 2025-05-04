@@ -1,7 +1,13 @@
 package com.example.game_events.Controller;
 
-import com.example.game_events.Model.Event;
-import com.example.game_events.Service.EventService;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -9,17 +15,8 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.ui.Model;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import com.example.game_events.Model.Event;
+import com.example.game_events.Service.EventService;
 
 @SpringBootTest
 public class EventControllerTest {
@@ -27,88 +24,98 @@ public class EventControllerTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private Model model;
+
     @InjectMocks
     private EventController eventController;
 
-    private Event testEvent1;
-    private Event testEvent2;
+    private Event event1, event2;
     private List<Event> eventList;
-    private Model model;
 
     @BeforeEach
     public void setup() {
         // Configurar datos de prueba
-        testEvent1 = new Event();
-        testEvent1.setId(1L);
-        testEvent1.setName("Test Event 1");
-        testEvent1.setDescription("Test Description 1");
-        testEvent1.setDateTime(LocalDateTime.now());
-        testEvent1.setLocation("Test Location 1");
-        testEvent1.setGameType("Test Game Type 1");
-        testEvent1.setCurrentParticipants(5);
-        testEvent1.setMaxParticipants(10);
-        testEvent1.setFeatured(true);
+        event1 = new Event();
+        event1.setId(1L);
+        event1.setName("Test Event 1");
+        event1.setDescription("Description 1");
+        event1.setGameType("FPS");
+        event1.setLocation("Location 1");
 
-        testEvent2 = new Event();
-        testEvent2.setId(2L);
-        testEvent2.setName("Test Event 2");
-        testEvent2.setDescription("Test Description 2");
-        testEvent2.setDateTime(LocalDateTime.now().plusDays(1));
-        testEvent2.setLocation("Test Location 2");
-        testEvent2.setGameType("Test Game Type 2");
-        testEvent2.setCurrentParticipants(3);
-        testEvent2.setMaxParticipants(8);
-        testEvent2.setFeatured(false);
+        event2 = new Event();
+        event2.setId(2L);
+        event2.setName("Test Event 2");
+        event2.setDescription("Description 2");
+        event2.setGameType("RPG");
+        event2.setLocation("Location 2");
 
-        eventList = Arrays.asList(testEvent1, testEvent2);
-        model = mock(Model.class);
-        when(model.addAttribute(any(String.class), any())).thenReturn(model);
+        eventList = Arrays.asList(event1, event2);
+
+        when(model.addAttribute(anyString(), any())).thenReturn(model);
     }
 
     @Test
     public void testListEvents() {
-        // Configurar mock
+        // Arrange
         when(eventService.getAllEvents()).thenReturn(eventList);
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = eventController.listEvents(model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("events/list", viewName);
+        verify(eventService).getAllEvents();
         verify(model).addAttribute(eq("events"), eq(eventList));
         verify(model).addAttribute(eq("nonce"), any(String.class));
     }
 
     @Test
     public void testSearchEvents() {
-        // Configurar mock
-        when(eventService.searchEvents("test", "Test Game Type 1", "Test Location 1"))
-                .thenReturn(Arrays.asList(testEvent1));
+        // Arrange
+        when(eventService.searchEvents("test", "FPS", "Location 1")).thenReturn(Arrays.asList(event1));
 
-        // Ejecutar método bajo prueba
-        String viewName = eventController.searchEvents(
-                "test", "Test Game Type 1", "Test Location 1", model);
+        // Act
+        String viewName = eventController.searchEvents("test", "FPS", "Location 1", model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("events/search", viewName);
-        verify(model).addAttribute(eq("events"), eq(Arrays.asList(testEvent1)));
-        verify(model).addAttribute(eq("keyword"), eq("test"));
-        verify(model).addAttribute(eq("gameType"), eq("Test Game Type 1"));
-        verify(model).addAttribute(eq("location"), eq("Test Location 1"));
+        verify(eventService).searchEvents("test", "FPS", "Location 1");
+        verify(model).addAttribute(eq("events"), eq(Arrays.asList(event1)));
+        verify(model).addAttribute("keyword", "test");
+        verify(model).addAttribute("gameType", "FPS");
+        verify(model).addAttribute("location", "Location 1");
         verify(model).addAttribute(eq("nonce"), any(String.class));
     }
 
     @Test
     public void testEventDetails() {
-        // Configurar mock
-        when(eventService.getEventById(1L)).thenReturn(Optional.of(testEvent1));
+        // Arrange
+        when(eventService.getEventById(1L)).thenReturn(Optional.of(event1));
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = eventController.eventDetails(1L, model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("events/details", viewName);
-        verify(model).addAttribute(eq("event"), eq(testEvent1));
+        verify(eventService).getEventById(1L);
+        verify(model).addAttribute(eq("event"), eq(event1));
         verify(model).addAttribute(eq("nonce"), any(String.class));
+    }
+
+    @Test
+    public void testEventDetailsNotFound() {
+        // Arrange
+        when(eventService.getEventById(99L)).thenReturn(Optional.empty());
+
+        // Act & Assert
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            eventController.eventDetails(99L, model);
+        });
+
+        assertEquals("Event not found", exception.getMessage());
+
+        verify(eventService).getEventById(99L);
+        verify(model, never()).addAttribute(eq("event"), any(Event.class));
     }
 }

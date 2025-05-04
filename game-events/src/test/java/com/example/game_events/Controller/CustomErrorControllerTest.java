@@ -1,21 +1,18 @@
 package com.example.game_events.Controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class CustomErrorControllerTest {
@@ -35,63 +32,76 @@ public class CustomErrorControllerTest {
     }
 
     @Test
-    public void testHandleError404() {
-        // Configurar mocks
-        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
-                .thenReturn(HttpStatus.NOT_FOUND.value());
+    public void testHandleErrorNotFound() {
+        // Arrange
+        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(HttpStatus.NOT_FOUND.value());
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = customErrorController.handleError(request, response, model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("error/404", viewName);
-        verify(model).addAttribute(eq("error"), eq("Página no encontrada"));
-        verify(model).addAttribute(eq("message"), eq("Lo sentimos, la página que estás buscando no existe."));
-        verify(response).setHeader(eq("Content-Security-Policy"), any(String.class));
+        verify(model).addAttribute("error", "Página no encontrada");
+        verify(model).addAttribute("message", "Lo sentimos, la página que estás buscando no existe.");
+        verify(response).setHeader(eq("Content-Security-Policy"), anyString());
+        verify(response).setHeader("X-Content-Type-Options", "nosniff");
+        verify(response).setHeader("X-Frame-Options", "SAMEORIGIN");
+        verify(response).setHeader("Referrer-Policy", "same-origin");
     }
 
     @Test
-    public void testHandleError403() {
-        // Configurar mocks
-        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
-                .thenReturn(HttpStatus.FORBIDDEN.value());
+    public void testHandleErrorForbidden() {
+        // Arrange
+        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(HttpStatus.FORBIDDEN.value());
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = customErrorController.handleError(request, response, model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("error/403", viewName);
-        verify(model).addAttribute(eq("error"), eq("Acceso denegado"));
-        verify(model).addAttribute(eq("message"), eq("No tienes permiso para acceder a este recurso."));
+        verify(model).addAttribute("error", "Acceso denegado");
+        verify(model).addAttribute("message", "No tienes permiso para acceder a este recurso.");
     }
 
     @Test
-    public void testHandleError500() {
-        // Configurar mocks
-        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
-                .thenReturn(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    public void testHandleErrorInternalServerError() {
+        // Arrange
+        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = customErrorController.handleError(request, response, model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("error/500", viewName);
-        verify(model).addAttribute(eq("error"), eq("Error interno del servidor"));
-        verify(model).addAttribute(eq("message"), eq("Ha ocurrido un error interno. Por favor, inténtalo más tarde."));
+        verify(model).addAttribute("error", "Error interno del servidor");
+        verify(model).addAttribute("message", "Ha ocurrido un error interno. Por favor, inténtalo más tarde.");
     }
 
     @Test
-    public void testHandleGenericError() {
-        // Configurar mocks
-        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE))
-                .thenReturn(null);
+    public void testHandleErrorUnknownStatus() {
+        // Arrange
+        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(HttpStatus.BAD_GATEWAY.value());
 
-        // Ejecutar método bajo prueba
+        // Act
         String viewName = customErrorController.handleError(request, response, model);
 
-        // Verificar resultados
+        // Assert
         assertEquals("error/general", viewName);
-        verify(model).addAttribute(eq("error"), eq("Error"));
-        verify(model).addAttribute(eq("message"), eq("Ha ocurrido un error inesperado."));
+        verify(model).addAttribute("error", "Error");
+        verify(model).addAttribute("message", "Ha ocurrido un error inesperado.");
+    }
+
+    @Test
+    public void testHandleErrorNoStatus() {
+        // Arrange
+        when(request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).thenReturn(null);
+
+        // Act
+        String viewName = customErrorController.handleError(request, response, model);
+
+        // Assert
+        assertEquals("error/general", viewName);
+        verify(model).addAttribute("error", "Error");
+        verify(model).addAttribute("message", "Ha ocurrido un error inesperado.");
     }
 }
