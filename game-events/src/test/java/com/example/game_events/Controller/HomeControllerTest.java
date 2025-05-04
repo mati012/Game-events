@@ -34,7 +34,6 @@ public class HomeControllerTest {
 
     @BeforeEach
     public void setup() {
-        // Configurar datos de prueba
         featuredEvent = new Event();
         featuredEvent.setId(1L);
         featuredEvent.setName("Featured Event");
@@ -52,14 +51,12 @@ public class HomeControllerTest {
 
     @Test
     public void testHome() {
-        // Arrange
         when(eventService.getFeaturedEvents()).thenReturn(featuredEvents);
         when(eventService.getRecentEvents()).thenReturn(recentEvents);
 
-        // Act
+        
         String viewName = homeController.home(model);
 
-        // Assert
         assertEquals("home", viewName);
         verify(eventService).getFeaturedEvents();
         verify(eventService).getRecentEvents();
@@ -70,14 +67,11 @@ public class HomeControllerTest {
 
     @Test
     public void testHomeWithNoEvents() {
-        // Arrange
         when(eventService.getFeaturedEvents()).thenReturn(Arrays.asList());
         when(eventService.getRecentEvents()).thenReturn(Arrays.asList());
 
-        // Act
         String viewName = homeController.home(model);
 
-        // Assert
         assertEquals("home", viewName);
         verify(eventService).getFeaturedEvents();
         verify(eventService).getRecentEvents();

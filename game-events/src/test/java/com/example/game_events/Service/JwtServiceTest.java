@@ -28,10 +28,8 @@ public class JwtServiceTest {
     
     @Test
     public void testGenerateToken() {
-        // Act
         String token = jwtService.generateToken(userDetails);
         
-        // Assert
         assertNotNull(token);
         assertTrue(token.length() > 20);
         
@@ -43,15 +41,12 @@ public class JwtServiceTest {
     
     @Test
     public void testGenerateTokenWithExtraClaims() {
-        // Arrange
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("role", "ADMIN");
         extraClaims.put("userId", 123);
         
-        // Act
         String token = jwtService.generateToken(extraClaims, userDetails);
         
-        // Assert
         assertNotNull(token);
         
         String username = jwtService.extractUsername(token);
@@ -68,30 +63,25 @@ public class JwtServiceTest {
     
     @Test
     public void testIsTokenValidWithDifferentUser() {
-        // Arrange
         String token = jwtService.generateToken(userDetails);
         
         UserDetails differentUser = mock(UserDetails.class);
         when(differentUser.getUsername()).thenReturn("anotheruser");
         
-        // Act & Assert
         assertFalse(jwtService.isTokenValid(token, differentUser));
     }
     
     @Test
     public void testExtractClaim() {
-        // Arrange
         String token = jwtService.generateToken(userDetails);
         
-        // Act
         String username = jwtService.extractClaim(token, Claims::getSubject);
         Date issuedAt = jwtService.extractClaim(token, Claims::getIssuedAt);
         Date expiration = jwtService.extractClaim(token, Claims::getExpiration);
         
-        // Assert
         assertEquals("testuser", username);
         assertNotNull(issuedAt);
         assertNotNull(expiration);
-        assertTrue(expiration.after(new Date())); // El token no ha expirado
+        assertTrue(expiration.after(new Date())); 
     }
 }
