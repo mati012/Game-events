@@ -72,15 +72,12 @@ public class EventServiceImplTest {
     
     @Test
     public void testGetEventById() {
-        // Arrange
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event1));
         when(eventRepository.findById(99L)).thenReturn(Optional.empty());
         
-        // Act
         Optional<Event> foundEvent = eventService.getEventById(1L);
         Optional<Event> notFoundEvent = eventService.getEventById(99L);
         
-        // Assert
         assertTrue(foundEvent.isPresent());
         assertEquals("Event 1", foundEvent.get().getName());
         assertFalse(notFoundEvent.isPresent());
@@ -91,13 +88,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testGetFeaturedEvents() {
-        // Arrange
         when(eventRepository.findByFeaturedTrue()).thenReturn(Arrays.asList(event1, event3));
         
-        // Act
         List<Event> result = eventService.getFeaturedEvents();
         
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(event1));
         assertTrue(result.contains(event3));
@@ -107,13 +101,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testGetRecentEvents() {
-        // Arrange
         when(eventRepository.findTop5ByOrderByDateTimeDesc()).thenReturn(Arrays.asList(event2, event1, event3));
         
-        // Act
         List<Event> result = eventService.getRecentEvents();
         
-        // Assert
         assertEquals(3, result.size());
         assertEquals(event2, result.get(0)); // El más reciente primero
         
@@ -122,13 +113,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testSearchEventsByKeyword() {
-        // Arrange
         when(eventRepository.searchEvents("FPS")).thenReturn(Arrays.asList(event1, event3));
         
-        // Act
         List<Event> result = eventService.searchEvents("FPS");
         
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(event1));
         assertTrue(result.contains(event3));
@@ -138,13 +126,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testGetEventsByGameType() {
-        // Arrange
         when(eventRepository.findByGameType("FPS")).thenReturn(Arrays.asList(event1, event3));
         
-        // Act
         List<Event> result = eventService.getEventsByGameType("FPS");
         
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(event1));
         assertTrue(result.contains(event3));
@@ -154,13 +139,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testGetEventsByLocation() {
-        // Arrange
         when(eventRepository.findByLocation("Location A")).thenReturn(Arrays.asList(event1, event3));
         
-        // Act
         List<Event> result = eventService.getEventsByLocation("Location A");
         
-        // Assert
         assertEquals(2, result.size());
         assertTrue(result.contains(event1));
         assertTrue(result.contains(event3));
@@ -170,17 +152,14 @@ public class EventServiceImplTest {
     
     @Test
     public void testSearchEventsWithFilters() {
-        // Arrange
         List<Event> allEvents = Arrays.asList(event1, event2, event3);
         when(eventRepository.findAll()).thenReturn(allEvents);
         
-        // Act
         List<Event> resultKeyword = eventService.searchEvents("FPS", null, null);
         List<Event> resultGameType = eventService.searchEvents(null, "FPS", null);
         List<Event> resultLocation = eventService.searchEvents(null, null, "Location A");
         List<Event> resultCombined = eventService.searchEvents("FPS", "FPS", "Location A");
         
-        // Assert
         assertEquals(1, resultKeyword.size());
         assertTrue(resultKeyword.contains(event3));
         
@@ -200,13 +179,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testSaveEvent() {
-        // Arrange
         when(eventRepository.save(event1)).thenReturn(event1);
         
-        // Act
         Event result = eventService.saveEvent(event1);
         
-        // Assert
         assertNotNull(result);
         assertEquals(event1.getId(), result.getId());
         assertEquals(event1.getName(), result.getName());
@@ -216,13 +192,10 @@ public class EventServiceImplTest {
     
     @Test
     public void testDeleteEvent() {
-        // Arrange
         doNothing().when(eventRepository).deleteById(1L);
         
-        // Act
         eventService.deleteEvent(1L);
         
-        // Assert
         verify(eventRepository).deleteById(1L);
     }
 }

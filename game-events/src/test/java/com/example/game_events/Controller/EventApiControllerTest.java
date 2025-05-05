@@ -32,7 +32,6 @@ public class EventApiControllerTest {
 
     @BeforeEach
     public void setup() {
-        // Configurar datos de prueba
         event1 = new Event();
         event1.setId(1L);
         event1.setName("Test Event 1");
@@ -52,13 +51,10 @@ public class EventApiControllerTest {
 
     @Test
     public void testGetAllEvents() {
-        // Arrange
         when(eventService.getAllEvents()).thenReturn(eventList);
 
-        // Act
         ResponseEntity<List<Event>> response = eventApiController.getAllEvents();
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, response.getBody().size());
         assertEquals("Test Event 1", response.getBody().get(0).getName());
@@ -69,13 +65,10 @@ public class EventApiControllerTest {
 
     @Test
     public void testSearchEvents() {
-        // Arrange
         when(eventService.searchEvents("test", "FPS", "Location 1")).thenReturn(Arrays.asList(event1));
 
-        // Act
         ResponseEntity<List<Event>> response = eventApiController.searchEvents("test", "FPS", "Location 1");
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
         assertEquals("Test Event 1", response.getBody().get(0).getName());
@@ -85,13 +78,10 @@ public class EventApiControllerTest {
 
     @Test
     public void testGetEventById() {
-        // Arrange
         when(eventService.getEventById(1L)).thenReturn(Optional.of(event1));
 
-        // Act
         ResponseEntity<Event> response = eventApiController.getEventById(1L);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Test Event 1", response.getBody().getName());
 
@@ -100,10 +90,8 @@ public class EventApiControllerTest {
 
     @Test
     public void testGetEventByIdNotFound() {
-        // Arrange
         when(eventService.getEventById(99L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         Exception exception = assertThrows(RuntimeException.class, () -> {
             eventApiController.getEventById(99L);
         });

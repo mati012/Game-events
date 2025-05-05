@@ -40,10 +40,8 @@ public class AuthControllerTest {
 
     @Test
     public void testShowRegistrationForm() {
-        // Act
         String viewName = authController.showRegistrationForm(model);
 
-        // Assert
         assertEquals("register", viewName);
         verify(model, atLeastOnce()).addAttribute(eq("nonce"), any(String.class));
         verify(model).addAttribute(eq("user"), any(User.class));
@@ -51,15 +49,12 @@ public class AuthControllerTest {
 
     @Test
     public void testRegisterUserSuccess() {
-        // Arrange
         when(userService.existsByUsername("testuser")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(false);
         when(userService.registerUser(any(User.class))).thenReturn(user);
 
-        // Act
         String viewName = authController.registerUser(user, model);
 
-        // Assert
         assertEquals("redirect:/login?registered", viewName);
         verify(userService).existsByUsername("testuser");
         verify(userService).existsByEmail("test@example.com");
@@ -68,13 +63,11 @@ public class AuthControllerTest {
 
     @Test
     public void testRegisterUserUsernameExists() {
-        // Arrange
         when(userService.existsByUsername("testuser")).thenReturn(true);
 
-        // Act
+        
         String viewName = authController.registerUser(user, model);
 
-        // Assert
         assertEquals("register", viewName);
         verify(userService).existsByUsername("testuser");
         verify(userService, never()).existsByEmail(anyString());
@@ -85,14 +78,11 @@ public class AuthControllerTest {
 
     @Test
     public void testRegisterUserEmailExists() {
-        // Arrange
         when(userService.existsByUsername("testuser")).thenReturn(false);
         when(userService.existsByEmail("test@example.com")).thenReturn(true);
 
-        // Act
         String viewName = authController.registerUser(user, model);
 
-        // Assert
         assertEquals("register", viewName);
         verify(userService).existsByUsername("testuser");
         verify(userService).existsByEmail("test@example.com");
@@ -103,10 +93,8 @@ public class AuthControllerTest {
 
     @Test
     public void testShowLoginForm() {
-        // Act
         String viewName = authController.showLoginForm(model);
 
-        // Assert
         assertEquals("login", viewName);
         verify(model, atLeastOnce()).addAttribute(eq("nonce"), any(String.class));
     }
